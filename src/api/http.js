@@ -7,3 +7,7 @@ export const productHttp = axios.create({
 export const paymentHttp = axios.create({
   baseURL: import.meta.env.VITE_PAYMENT_API,
 });
+
+export const orderHttp = axios.create({
+  baseURL: import.meta.env.VITE_ORDER_API,
+});
