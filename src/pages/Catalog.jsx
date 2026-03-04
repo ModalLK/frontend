@@ -113,6 +113,34 @@ export default function Catalog() {
           </div>
         )}
       </div>
+
+      {/* States */}
+      {loading && (
+        <div className="rounded-2xl border bg-white p-6 text-sm text-slate-600">
+          Loading products...
+        </div>
+      )}
+
+      {error && (
+        <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-sm text-red-700">
+          {error}
+        </div>
+      )}
+
+      {!loading && !error && filtered.length === 0 && (
+        <div className="rounded-2xl border bg-white p-6 text-sm text-slate-600">
+          No products found.
+        </div>
+      )}
+
+      {/* Grid */}
+      {!loading && !error && filtered.length > 0 && (
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {filtered.map((p) => (
+            <ProductCard key={p.id} product={p} onBuy={onBuy} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
