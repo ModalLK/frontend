@@ -1,36 +1,41 @@
+import { Link } from "react-router-dom";
 import { formatCurrency } from "../utils/format";
+import { useCart } from "../context/CartContext";
+import { useWishlist } from "../context/WishlistContext";
 
-export default function ProductCard({ product, onBuy }) {
+export default function ProductCard({ product }) {
+  const { addToCart } = useCart();
+  const { items: wish, toggleWishlist } = useWishlist();
+
   const stock = Number(product?.stock ?? 0);
   const outOfStock = stock <= 0;
+  const wished = wish.some((x) => x.id === product?.id);
 
   return (
     <div className="group overflow-hidden rounded-2xl border bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
-      {/* Image */}
-      <div className="relative h-48 w-full bg-slate-100">
-        <img
-          src={product?.imageUrl}
-          alt={product?.name}
-          className="h-full w-full object-cover"
-          onError={(e) => {
-            e.currentTarget.src =
-              "https://via.placeholder.com/800x600?text=No+Image";
-          }}
-        />
-
-        {/* Category badge */}
-        <div className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-slate-700 backdrop-blur">
-          {product?.category ?? "General"}
+      <Link to={`/products/${product?.id}`} className="block">
+        <div className="relative h-36 w-full bg-slate-100">
+          <img
+            src={product?.imageUrl}
+            alt={product?.name}
+            className="h-full w-full object-contain p-3"
+            onError={(e) =>
+              (e.currentTarget.src =
+                "https://via.placeholder.com/800x600?text=No+Image")
+            }
+          />
+          <div className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-slate-700 backdrop-blur">
+            {product?.category ?? "General"}
+          </div>
         </div>
-      </div>
+      </Link>
 
-      {/* Content */}
       <div className="p-4">
         <div className="mb-2 flex items-start justify-between gap-3">
-          <div>
-            <h3 className="line-clamp-1 text-base font-bold text-slate-900">
+          <div className="min-w-0">
+            <p className="line-clamp-1 text-sm font-extrabold text-slate-900">
               {product?.name}
-            </h3>
+            </p>
             <p className="text-xs text-slate-500">SKU: {product?.sku}</p>
           </div>
           <p className="text-sm font-extrabold text-slate-900">
@@ -38,8 +43,7 @@ export default function ProductCard({ product, onBuy }) {
           </p>
         </div>
 
-        {/* Stock */}
-        <div className="mb-4 flex items-center justify-between text-sm">
+        <div className="mb-3 flex items-center justify-between">
           <span
             className={
               outOfStock
@@ -49,15 +53,23 @@ export default function ProductCard({ product, onBuy }) {
           >
             {outOfStock ? "Out of stock" : `In stock: ${stock}`}
           </span>
+
+          <button
+            onClick={() => toggleWishlist(product)}
+            className={`rounded-xl border px-3 py-2 text-xs font-bold transition ${
+              wished ? "bg-slate-900 text-white" : "hover:bg-slate-50"
+            }`}
+          >
+            {wished ? "Saved" : "Wishlist"}
+          </button>
         </div>
 
-        {/* CTA */}
         <button
           disabled={outOfStock}
-          onClick={() => onBuy?.(product)}
+          onClick={() => addToCart(product, 1)}
           className="w-full rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-300"
         >
-          Buy Now
+          Add to Cart
         </button>
       </div>
     </div>
