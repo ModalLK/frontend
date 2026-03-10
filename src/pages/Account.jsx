@@ -23,6 +23,13 @@ export default function Account() {
           >
             Wishlist
           </Link>
+
+          <Link
+            to="/admin/products"
+            className="block rounded-2xl border border-slate-200 px-4 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
+          >
+            Manage Products
+          </Link>
           <button className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50">
             Sign out
           </button>

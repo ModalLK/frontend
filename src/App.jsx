@@ -12,6 +12,9 @@ import Wishlist from "./pages/Wishlist";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Account from "./pages/Account";
+import AdminProducts from "./pages/AdminProducts";
+import ProductForm from "./pages/ProductForm";
+import ProductView from "./pages/ProductView";
 
 export default function App() {
   return (
@@ -29,6 +32,11 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/account" element={<Account />} />
+          
+          <Route path="/admin/products" element={<AdminProducts />} />
+          <Route path="/admin/products/new" element={<ProductForm />} />
+          <Route path="/admin/products/edit/:id" element={<ProductForm />} />
+          <Route path="/admin/products/:id" element={<ProductView />} />
         </Route>
       </Routes>
     </BrowserRouter>
