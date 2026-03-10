@@ -18,11 +18,11 @@ export default function Navbar() {
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3">
         <Link to="/" className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-600 to-blue-500 text-sm font-black text-white shadow-md">
-            M
+            F.LK
           </div>
           <div className="leading-tight">
             <p className="text-base font-black tracking-tight text-slate-900">
-              ModalLK
+              Fashion.LK
             </p>
             <p className="text-xs text-slate-500">Modern E-Commerce</p>
           </div>
