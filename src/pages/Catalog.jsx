@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { getAllProducts } from "../services/productService";
 import ProductCard from "../components/ProductCard";
 import CatalogSidebar from "../components/CatalogSidebar";
@@ -7,9 +8,12 @@ export default function Catalog() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [searchParams] = useSearchParams();
 
   const [q, setQ] = useState("");
-  const [category, setCategory] = useState("ALL");
+  const [category, setCategory] = useState(
+    searchParams.get("category") || "ALL",
+  );
   const [sort, setSort] = useState("POPULAR");
   const [priceRange, setPriceRange] = useState([0, 50000]);
 
@@ -35,8 +39,6 @@ export default function Catalog() {
 
   const filtered = useMemo(() => {
     const text = q.trim().toLowerCase();
-
-    // normalize min/max
     const minP = Math.min(priceRange[0], priceRange[1]);
     const maxP = Math.max(priceRange[0], priceRange[1]);
 
@@ -53,13 +55,13 @@ export default function Catalog() {
       return matchCategory && matchText && matchPrice;
     });
 
-    // sort
-    if (sort === "PRICE_ASC")
+    if (sort === "PRICE_ASC") {
       list.sort((a, b) => Number(a.price) - Number(b.price));
-    if (sort === "PRICE_DESC")
+    } else if (sort === "PRICE_DESC") {
       list.sort((a, b) => Number(b.price) - Number(a.price));
-    if (sort === "NAME_ASC")
+    } else if (sort === "NAME_ASC") {
       list.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+    }
 
     return list;
   }, [products, q, category, sort, priceRange]);
@@ -81,66 +83,51 @@ export default function Catalog() {
       </div>
 
       <div className="lg:col-span-3">
-        <div className="mb-4">
-          <h1 className="text-2xl font-extrabold">Catalog</h1>
-          <p className="text-sm text-slate-500">
-            Search, filter, sort, and buy products.
-          </p>
+        <div className="mb-5 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <h1 className="text-3xl font-black tracking-tight text-slate-900">
+                Catalog
+              </h1>
+              <p className="mt-1 text-sm text-slate-500">
+                Search, filter, compare, and shop products.
+              </p>
+            </div>
+
+            {!loading && !error && (
+              <p className="rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold text-slate-600">
+                {filtered.length} product{filtered.length !== 1 ? "s" : ""}
+              </p>
+            )}
+          </div>
         </div>
 
         {loading && (
-          <div className="rounded-2xl border bg-white p-6 text-sm">
-            Loading...
+          <div className="rounded-3xl border border-slate-200 bg-white p-6 text-sm text-slate-600 shadow-sm">
+            Loading products...
           </div>
         )}
+
         {error && (
-          <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-sm text-red-700">
+          <div className="rounded-3xl border border-red-200 bg-red-50 p-6 text-sm text-red-700 shadow-sm">
             {error}
           </div>
         )}
 
         {!loading && !error && filtered.length === 0 && (
-          <div className="rounded-2xl border bg-white p-6 text-sm text-slate-600">
+          <div className="rounded-3xl border border-slate-200 bg-white p-6 text-sm text-slate-600 shadow-sm">
             No products found.
           </div>
         )}
 
         {!loading && !error && filtered.length > 0 && (
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
             {filtered.map((p) => (
               <ProductCard key={p.id} product={p} />
             ))}
           </div>
         )}
       </div>
-
-      {/* States */}
-      {loading && (
-        <div className="rounded-2xl border bg-white p-6 text-sm text-slate-600">
-          Loading products...
-        </div>
-      )}
-
-      {error && (
-        <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-sm text-red-700">
-          {error}
-        </div>
-      )}
-
-      {!loading && !error && filtered.length === 0 && (
-        <div className="rounded-2xl border bg-white p-6 text-sm text-slate-600">
-          No products found.
-        </div>
-      )}
-
-      {/* Grid */}
-      {!loading && !error && filtered.length > 0 && (
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((p) => (
-            <ProductCard key={p.id} product={p} onBuy={onBuy} />
-          ))}
-        </div>
-      )}
     </div>
   );
 }
