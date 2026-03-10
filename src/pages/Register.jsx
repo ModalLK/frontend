@@ -9,29 +9,34 @@ export default function Register() {
   }
 
   return (
-    <div className="mx-auto max-w-md rounded-2xl border bg-white p-6">
-      <h1 className="text-xl font-extrabold">Register</h1>
-      <form onSubmit={onSubmit} className="mt-5 space-y-3">
+    <div className="mx-auto max-w-md rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm">
+      <h1 className="text-2xl font-black text-slate-900">Create Account</h1>
+      <p className="mt-2 text-sm text-slate-500">
+        Register to save your details and manage orders.
+      </p>
+
+      <form onSubmit={onSubmit} className="mt-6 space-y-4">
         <input
-          className="w-full rounded-xl border px-3 py-2 text-sm"
+          className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100"
           placeholder="Full name"
         />
         <input
-          className="w-full rounded-xl border px-3 py-2 text-sm"
+          className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100"
           placeholder="Email"
         />
         <input
-          className="w-full rounded-xl border px-3 py-2 text-sm"
+          className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100"
           placeholder="Password"
           type="password"
         />
-        <button className="w-full rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-extrabold text-white hover:bg-blue-700">
+        <button className="w-full rounded-2xl bg-indigo-600 px-4 py-3 text-sm font-bold text-white transition hover:bg-indigo-700">
           Create account
         </button>
       </form>
-      <p className="mt-3 text-sm text-slate-600">
+
+      <p className="mt-4 text-sm text-slate-600">
         Already have an account?{" "}
-        <Link to="/login" className="font-bold text-blue-600">
+        <Link to="/login" className="font-bold text-indigo-600">
           Login
         </Link>
       </p>

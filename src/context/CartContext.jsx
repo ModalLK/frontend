@@ -1,22 +1,40 @@
-import { createContext, useContext, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 
 const CartCtx = createContext(null);
 
 export function CartProvider({ children }) {
-  const [items, setItems] = useState([]); // {id,name,price,imageUrl,sku,stock,qty}
+  const [items, setItems] = useState(() => {
+    try {
+      const raw = localStorage.getItem("cart_items");
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem("cart_items", JSON.stringify(items));
+  }, [items]);
 
   function addToCart(product, qty = 1) {
     const stock = Number(product?.stock ?? 0);
-    if (stock <= 0) return toast.error("Out of stock");
+    if (stock <= 0) {
+      toast.error("Out of stock");
+      return;
+    }
 
     setItems((prev) => {
       const existing = prev.find((x) => x.id === product.id);
+
       if (existing) {
         const nextQty = Math.min(existing.qty + qty, stock);
         toast.success("Added to cart");
-        return prev.map((x) => (x.id === product.id ? { ...x, qty: nextQty } : x));
+        return prev.map((x) =>
+          x.id === product.id ? { ...x, qty: nextQty } : x,
+        );
       }
+
       toast.success("Added to cart");
       return [
         ...prev,
@@ -29,6 +47,7 @@ export function CartProvider({ children }) {
           stock,
           qty: Math.min(qty, stock),
           category: product.category,
+          description: product.description,
         },
       ];
     });
@@ -45,7 +64,7 @@ export function CartProvider({ children }) {
         if (x.id !== id) return x;
         const next = Math.max(1, Math.min(Number(qty), x.stock || 999));
         return { ...x, qty: next };
-      })
+      }),
     );
   }
 
@@ -53,10 +72,16 @@ export function CartProvider({ children }) {
     setItems([]);
   }
 
-  const cartCount = useMemo(() => items.reduce((s, x) => s + x.qty, 0), [items]);
-  const subtotal = useMemo(() => items.reduce((s, x) => s + x.price * x.qty, 0), [items]);
+  const cartCount = useMemo(
+    () => items.reduce((sum, item) => sum + item.qty, 0),
+    [items],
+  );
 
-  // free shipping incentive
+  const subtotal = useMemo(
+    () => items.reduce((sum, item) => sum + item.price * item.qty, 0),
+    [items],
+  );
+
   const freeShipThreshold = 15000;
   const shipping = subtotal >= freeShipThreshold ? 0 : 600;
   const total = subtotal + shipping;
@@ -79,6 +104,8 @@ export function CartProvider({ children }) {
 
 export function useCart() {
   const ctx = useContext(CartCtx);
-  if (!ctx) throw new Error("useCart must be used inside CartProvider");
+  if (!ctx) {
+    throw new Error("useCart must be used inside CartProvider");
+  }
   return ctx;
 }
