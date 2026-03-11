@@ -1,7 +1,9 @@
 import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
 import { formatCurrency } from "../utils/format";
 import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
+import { checkStock } from "../services/productService";
 
 export default function ProductCard({ product }) {
   const { addToCart } = useCart();
@@ -10,6 +12,22 @@ export default function ProductCard({ product }) {
   const stock = Number(product?.stock ?? 0);
   const outOfStock = stock <= 0;
   const wished = wish.some((x) => x.id === product?.id);
+
+  async function handleAddToCart() {
+    try {
+      const result = await checkStock(product.id, 1);
+
+      if (!result.available) {
+        toast.error("This product is out of stock");
+        return;
+      }
+
+      addToCart(product, 1);
+      toast.success("Added to cart");
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Failed to check stock");
+    }
+  }
 
   return (
     <div className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl">
@@ -68,7 +86,7 @@ export default function ProductCard({ product }) {
 
         <button
           disabled={outOfStock}
-          onClick={() => addToCart(product, 1)}
+          onClick={handleAddToCart}
           className="w-full rounded-2xl bg-indigo-600 px-4 py-3 text-sm font-bold text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-slate-300"
         >
           Add to Cart

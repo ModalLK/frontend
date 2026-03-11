@@ -1,6 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import { useCart } from "../context/CartContext";
 import { formatCurrency } from "../utils/format";
+import { checkStock } from "../services/productService";
 
 export default function Cart() {
   const nav = useNavigate();
@@ -15,6 +17,25 @@ export default function Cart() {
   } = useCart();
 
   const remaining = Math.max(0, freeShipThreshold - subtotal);
+
+  async function handleCheckoutClick() {
+    try {
+      for (const item of items) {
+        const result = await checkStock(item.id, Number(item.qty || 1));
+
+        if (!result.available) {
+          toast.error(
+            `${item.name}: only ${result.availableStock} item(s) available`,
+          );
+          return;
+        }
+      }
+
+      nav("/checkout");
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Failed to validate stock");
+    }
+  }
 
   if (items.length === 0) {
     return (
@@ -122,7 +143,7 @@ export default function Cart() {
         </div>
 
         <button
-          onClick={() => nav("/checkout")}
+          onClick={handleCheckoutClick}
           className="mt-5 w-full rounded-2xl bg-indigo-600 px-4 py-3 text-sm font-bold text-white transition hover:bg-indigo-700"
         >
           Checkout
