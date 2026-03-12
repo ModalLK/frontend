@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { getAllProducts, getProductById } from "../services/productService";
+import toast from "react-hot-toast";
+import {
+  getAllProducts,
+  getProductById,
+  checkStock,
+} from "../services/productService";
 import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
 import { formatCurrency } from "../utils/format";
@@ -46,6 +51,22 @@ export default function ProductDetail() {
 
   const stock = Number(product?.stock ?? 0);
   const maxQty = Math.max(1, Math.min(10, stock || 10));
+
+  async function handleAddToCart() {
+    try {
+      const result = await checkStock(product.id, qty);
+
+      if (!result.available) {
+        toast.error(`Only ${result.availableStock} item(s) available`);
+        return;
+      }
+
+      addToCart(product, qty);
+      toast.success("Added to cart");
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Failed to check stock");
+    }
+  }
 
   if (loading) {
     return (
@@ -130,7 +151,7 @@ export default function ProductDetail() {
           <div className="mt-6 flex gap-3">
             <button
               disabled={stock <= 0}
-              onClick={() => addToCart(product, qty)}
+              onClick={handleAddToCart}
               className="flex-1 rounded-2xl bg-indigo-600 px-4 py-3 text-sm font-bold text-white transition hover:bg-indigo-700 disabled:bg-slate-300"
             >
               Add to Cart
