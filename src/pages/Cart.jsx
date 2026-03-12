@@ -2,7 +2,6 @@ import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useCart } from "../context/CartContext";
 import { formatCurrency } from "../utils/format";
-import { checkStock } from "../services/productService";
 
 export default function Cart() {
   const nav = useNavigate();
@@ -18,23 +17,8 @@ export default function Cart() {
 
   const remaining = Math.max(0, freeShipThreshold - subtotal);
 
-  async function handleCheckoutClick() {
-    try {
-      for (const item of items) {
-        const result = await checkStock(item.id, Number(item.qty || 1));
-
-        if (!result.available) {
-          toast.error(
-            `${item.name}: only ${result.availableStock} item(s) available`,
-          );
-          return;
-        }
-      }
-
-      nav("/checkout");
-    } catch (error) {
-      toast.error(error?.response?.data?.message || "Failed to validate stock");
-    }
+  function handleCheckoutClick() {
+    nav("/checkout");
   }
 
   if (items.length === 0) {
@@ -71,19 +55,11 @@ export default function Cart() {
         <div className="divide-y divide-slate-200">
           {items.map((x) => (
             <div key={x.id} className="flex gap-4 p-5">
-              <img
-                src={x.imageUrl}
-                alt={x.name}
-                className="h-24 w-24 rounded-2xl bg-slate-100 object-contain p-2"
-                onError={(e) =>
-                  (e.currentTarget.src =
-                    "https://via.placeholder.com/300?text=No+Image")
-                }
-              />
-
               <div className="flex-1">
-                <p className="font-black text-slate-900">{x.name}</p>
-                <p className="mt-1 text-xs text-slate-500">SKU: {x.sku}</p>
+                <p className="font-black text-slate-900">{x.productName}</p>
+                <p className="mt-1 text-xs text-slate-500">
+                  Product ID: {x.productId} | Size: {x.size}
+                </p>
                 <p className="mt-2 text-sm font-black text-slate-900">
                   {formatCurrency(x.price)}
                 </p>
@@ -91,13 +67,11 @@ export default function Cart() {
 
               <div className="flex flex-col items-end gap-3">
                 <select
-                  value={x.qty}
+                  value={x.quantity}
                   onChange={(e) => setQty(x.id, Number(e.target.value))}
                   className="rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100"
                 >
-                  {Array.from({
-                    length: Math.min(10, Math.max(1, x.stock || 10)),
-                  }).map((_, i) => (
+                  {Array.from({ length: 10 }).map((_, i) => (
                     <option key={i + 1} value={i + 1}>
                       {i + 1}
                     </option>
@@ -105,7 +79,17 @@ export default function Cart() {
                 </select>
 
                 <button
-                  onClick={() => removeFromCart(x.id)}
+                  onClick={async () => {
+                    try {
+                      await removeFromCart(x.id);
+                      toast.success("Removed from cart");
+                    } catch (error) {
+                      toast.error(
+                        error?.response?.data?.message ||
+                          "Failed to remove item",
+                      );
+                    }
+                  }}
                   className="text-sm font-bold text-red-600 hover:text-red-700"
                 >
                   Remove

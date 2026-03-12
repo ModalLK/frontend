@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import { createPaymentSession } from "../services/paymentService";
-import { checkStock, reduceStock } from "../services/productService";
+import { useNavigate } from "react-router-dom";
+import { placeOrder } from "../services/orderService";
 import { useCart } from "../context/CartContext";
 import { formatCurrency } from "../utils/format";
 
@@ -13,42 +13,36 @@ const initialCustomer = {
 };
 
 export default function CheckoutPage() {
-  const { items, clearCart } = useCart();
+  const nav = useNavigate();
+  const { items, subtotal, shipping, total, clearCart } = useCart();
 
   const [customer, setCustomer] = useState(initialCustomer);
   const [paymentMethod, setPaymentMethod] = useState("CARD");
   const [loading, setLoading] = useState(false);
-  const [paymentResult, setPaymentResult] = useState(null);
 
-  const subtotal = useMemo(() => {
-    return items.reduce((sum, item) => {
-      const price = Number(item.price || 0);
-      const qty = Number(item.qty || 1);
-      return sum + price * qty;
-    }, 0);
-  }, [items]);
+  const itemCount = useMemo(
+    () => items.reduce((sum, item) => sum + Number(item.quantity || 0), 0),
+    [items],
+  );
 
-  const shipping = subtotal >= 5000 ? 0 : 350;
-  const total = subtotal + shipping;
-
-  const handleCustomerChange = (e) => {
+  function handleCustomerChange(e) {
     const { name, value } = e.target;
     setCustomer((prev) => ({
       ...prev,
       [name]: value,
     }));
-  };
+  }
 
-  const validateForm = () => {
+  function validateForm() {
     if (!customer.fullName.trim()) return "Full name is required";
     if (!customer.phone.trim()) return "Phone number is required";
     if (!customer.address.trim()) return "Address is required";
     if (!customer.city.trim()) return "City is required";
     if (!items.length) return "Your cart is empty";
     return null;
-  };
+  }
 
-  const handleSubmit = async (e) => {
+  async function handleSubmit(e) {
     e.preventDefault();
 
     const error = validateForm();
@@ -59,56 +53,24 @@ export default function CheckoutPage() {
 
     try {
       setLoading(true);
-      setPaymentResult(null);
 
-      for (const item of items) {
-        const stockResult = await checkStock(item.id, Number(item.qty || 1));
+      await placeOrder({
+        customerName: customer.fullName,
+        phone: customer.phone,
+        shippingAddress: customer.address,
+        city: customer.city,
+        paymentMethod,
+      });
 
-        if (!stockResult.available) {
-          toast.error(
-            `${item.name}: only ${stockResult.availableStock} item(s) available`,
-          );
-          return;
-        }
-      }
-
-      const payload = {
-        customer: {
-          fullName: customer.fullName,
-          phone: customer.phone,
-          address: customer.address,
-          city: customer.city,
-        },
-        payment: {
-          method: paymentMethod,
-        },
-        cart: items.map((item) => ({
-          productId: item.id,
-          qty: Number(item.qty || 1),
-        })),
-      };
-
-      const result = await createPaymentSession(payload);
-      setPaymentResult(result);
-
-      if (result.status === "PAID") {
-        for (const item of items) {
-          await reduceStock(item.id, Number(item.qty || 1));
-        }
-
-        toast.success("Payment completed successfully");
-        clearCart();
-      } else {
-        toast.error(result.failureReason || "Payment failed");
-      }
+      await clearCart();
+      toast.success("Order placed successfully");
+      nav("/success");
     } catch (err) {
-      const message =
-        err?.response?.data?.message || "Checkout failed. Please try again.";
-      toast.error(message);
+      toast.error(err?.response?.data?.message || "Checkout failed");
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10">
@@ -140,6 +102,7 @@ export default function CheckoutPage() {
                   onChange={handleCustomerChange}
                   className="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-slate-500"
                   placeholder="Enter full name"
+                  required
                 />
               </div>
 
@@ -154,6 +117,7 @@ export default function CheckoutPage() {
                   onChange={handleCustomerChange}
                   className="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-slate-500"
                   placeholder="Enter phone number"
+                  required
                 />
               </div>
 
@@ -168,6 +132,7 @@ export default function CheckoutPage() {
                   onChange={handleCustomerChange}
                   className="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-slate-500"
                   placeholder="Enter address"
+                  required
                 />
               </div>
 
@@ -182,6 +147,7 @@ export default function CheckoutPage() {
                   onChange={handleCustomerChange}
                   className="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-slate-500"
                   placeholder="Enter city"
+                  required
                 />
               </div>
             </div>
@@ -191,8 +157,8 @@ export default function CheckoutPage() {
             <h2 className="text-xl font-semibold text-slate-900">
               Payment Method
             </h2>
-            <div className="mt-4 grid gap-3 md:grid-cols-3">
-              {["CARD", "COD", "FAIL"].map((method) => (
+            <div className="mt-4 grid gap-3 md:grid-cols-2">
+              {["CARD", "COD"].map((method) => (
                 <label
                   key={method}
                   className={`flex cursor-pointer items-center justify-between rounded-2xl border px-4 py-4 transition ${
@@ -202,11 +168,7 @@ export default function CheckoutPage() {
                   }`}
                 >
                   <span className="font-medium text-slate-700">
-                    {method === "CARD"
-                      ? "Card"
-                      : method === "COD"
-                        ? "Cash on Delivery"
-                        : "Mock Fail"}
+                    {method === "CARD" ? "Card" : "Cash on Delivery"}
                   </span>
                   <input
                     type="radio"
@@ -219,10 +181,6 @@ export default function CheckoutPage() {
                 </label>
               ))}
             </div>
-            <p className="mt-3 text-sm text-slate-500">
-              Use <span className="font-semibold">FAIL</span> only for testing a
-              failed payment response.
-            </p>
           </div>
 
           <button
@@ -230,7 +188,7 @@ export default function CheckoutPage() {
             disabled={loading || !items.length}
             className="inline-flex w-full items-center justify-center rounded-2xl bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {loading ? "Processing payment..." : `Pay ${formatCurrency(total)}`}
+            {loading ? "Processing order..." : `Pay ${formatCurrency(total)}`}
           </button>
         </form>
 
@@ -249,21 +207,16 @@ export default function CheckoutPage() {
                     key={item.id}
                     className="flex items-center gap-4 border-b border-slate-100 pb-4"
                   >
-                    <img
-                      src={item.imageUrl}
-                      alt={item.name}
-                      className="h-16 w-16 rounded-xl border border-slate-200 object-cover"
-                    />
                     <div className="min-w-0 flex-1">
                       <h3 className="truncate font-medium text-slate-800">
-                        {item.name}
+                        {item.productName}
                       </h3>
                       <p className="text-sm text-slate-500">
-                        Qty: {item.qty || 1}
+                        Qty: {item.quantity} | Size: {item.size}
                       </p>
                     </div>
                     <div className="text-sm font-semibold text-slate-900">
-                      {formatCurrency((item.price || 0) * (item.qty || 1))}
+                      {formatCurrency(item.subtotal)}
                     </div>
                   </div>
                 ))
@@ -272,12 +225,18 @@ export default function CheckoutPage() {
 
             <div className="mt-6 space-y-3 text-sm">
               <div className="flex items-center justify-between text-slate-600">
+                <span>Items</span>
+                <span>{itemCount}</span>
+              </div>
+              <div className="flex items-center justify-between text-slate-600">
                 <span>Subtotal</span>
                 <span>{formatCurrency(subtotal)}</span>
               </div>
               <div className="flex items-center justify-between text-slate-600">
                 <span>Shipping</span>
-                <span>{formatCurrency(shipping)}</span>
+                <span>
+                  {shipping === 0 ? "FREE" : formatCurrency(shipping)}
+                </span>
               </div>
               <div className="flex items-center justify-between border-t border-slate-200 pt-3 text-base font-bold text-slate-900">
                 <span>Total</span>
@@ -285,45 +244,6 @@ export default function CheckoutPage() {
               </div>
             </div>
           </div>
-
-          {paymentResult && (
-            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-              <h2 className="text-xl font-semibold text-slate-900">
-                Payment Result
-              </h2>
-
-              <div className="mt-4 space-y-2 text-sm text-slate-700">
-                <p>
-                  <span className="font-semibold">Payment ID:</span>{" "}
-                  {paymentResult.id}
-                </p>
-                <p>
-                  <span className="font-semibold">Status:</span>{" "}
-                  {paymentResult.status}
-                </p>
-                <p>
-                  <span className="font-semibold">Customer:</span>{" "}
-                  {paymentResult.customerName}
-                </p>
-                <p>
-                  <span className="font-semibold">Total:</span>{" "}
-                  {formatCurrency(paymentResult.total || 0)}
-                </p>
-                {paymentResult.gatewayTransactionId && (
-                  <p>
-                    <span className="font-semibold">Transaction ID:</span>{" "}
-                    {paymentResult.gatewayTransactionId}
-                  </p>
-                )}
-                {paymentResult.failureReason && (
-                  <p className="text-red-600">
-                    <span className="font-semibold">Failure Reason:</span>{" "}
-                    {paymentResult.failureReason}
-                  </p>
-                )}
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>

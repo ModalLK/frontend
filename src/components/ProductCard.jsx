@@ -1,12 +1,15 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { formatCurrency } from "../utils/format";
 import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
+import { useAuth } from "../context/AuthContext";
 import { checkStock } from "../services/productService";
 
 export default function ProductCard({ product }) {
+  const navigate = useNavigate();
   const { addToCart } = useCart();
+  const { isAuthenticated } = useAuth();
   const { items: wish, toggleWishlist } = useWishlist();
 
   const stock = Number(product?.stock ?? 0);
@@ -14,6 +17,12 @@ export default function ProductCard({ product }) {
   const wished = wish.some((x) => x.id === product?.id);
 
   async function handleAddToCart() {
+    if (!isAuthenticated) {
+      toast.error("Please login first");
+      navigate("/login");
+      return;
+    }
+
     try {
       const result = await checkStock(product.id, 1);
 
@@ -22,10 +31,10 @@ export default function ProductCard({ product }) {
         return;
       }
 
-      addToCart(product, 1);
+      await addToCart(product, 1, "M");
       toast.success("Added to cart");
     } catch (error) {
-      toast.error(error?.response?.data?.message || "Failed to check stock");
+      toast.error(error?.response?.data?.message || "Failed to add to cart");
     }
   }
 

@@ -1,111 +1,98 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import toast from "react-hot-toast";
+import {
+  addCartItem,
+  clearCartApi,
+  getMyCart,
+  removeCartItem,
+  updateCartItem,
+} from "../services/orderService";
+import { useAuth } from "./AuthContext";
 
-const CartCtx = createContext(null);
+const CartContext = createContext(null);
 
 export function CartProvider({ children }) {
-  const [items, setItems] = useState(() => {
-    try {
-      const raw = localStorage.getItem("cart_items");
-      return raw ? JSON.parse(raw) : [];
-    } catch {
-      return [];
-    }
-  });
+  const { isAuthenticated } = useAuth();
+  const [cart, setCart] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    localStorage.setItem("cart_items", JSON.stringify(items));
-  }, [items]);
-
-  function addToCart(product, qty = 1) {
-    const stock = Number(product?.stock ?? 0);
-    if (stock <= 0) {
-      toast.error("Out of stock");
+  async function loadCart() {
+    if (!isAuthenticated) {
+      setCart(null);
       return;
     }
 
-    setItems((prev) => {
-      const existing = prev.find((x) => x.id === product.id);
+    try {
+      setLoading(true);
+      const data = await getMyCart();
+      setCart(data);
+    } catch {
+      setCart({ cartItems: [], totalAmount: 0 });
+    } finally {
+      setLoading(false);
+    }
+  }
 
-      if (existing) {
-        const nextQty = Math.min(existing.qty + qty, stock);
-        toast.success("Added to cart");
-        return prev.map((x) =>
-          x.id === product.id ? { ...x, qty: nextQty } : x,
-        );
-      }
+  useEffect(() => {
+    loadCart();
+  }, [isAuthenticated]);
 
-      toast.success("Added to cart");
-      return [
-        ...prev,
-        {
-          id: product.id,
-          name: product.name,
-          price: Number(product.price || 0),
-          imageUrl: product.imageUrl,
-          sku: product.sku,
-          stock,
-          qty: Math.min(qty, stock),
-          category: product.category,
-          description: product.description,
-        },
-      ];
+  async function addToCart(product, quantity = 1, size = "M") {
+    const data = await addCartItem({
+      productId: product.id,
+      quantity,
+      size,
     });
+    setCart(data);
   }
 
-  function removeFromCart(id) {
-    setItems((prev) => prev.filter((x) => x.id !== id));
-    toast.success("Removed from cart");
+  async function setQty(itemId, quantity) {
+    const data = await updateCartItem(itemId, { quantity });
+    setCart(data);
   }
 
-  function setQty(id, qty) {
-    setItems((prev) =>
-      prev.map((x) => {
-        if (x.id !== id) return x;
-        const next = Math.max(1, Math.min(Number(qty), x.stock || 999));
-        return { ...x, qty: next };
-      }),
-    );
+  async function removeFromCart(itemId) {
+    const data = await removeCartItem(itemId);
+    setCart(data);
   }
 
-  function clearCart() {
-    setItems([]);
+  async function clearCart() {
+    await clearCartApi();
+    setCart({ cartItems: [], totalAmount: 0 });
   }
 
-  const cartCount = useMemo(
-    () => items.reduce((sum, item) => sum + item.qty, 0),
-    [items],
+  const items = cart?.cartItems || [];
+  const subtotal = items.reduce(
+    (sum, item) => sum + Number(item.subtotal || 0),
+    0,
   );
-
-  const subtotal = useMemo(
-    () => items.reduce((sum, item) => sum + item.price * item.qty, 0),
-    [items],
-  );
-
-  const freeShipThreshold = 15000;
-  const shipping = subtotal >= freeShipThreshold ? 0 : 600;
+  const shipping = subtotal >= 5000 || subtotal === 0 ? 0 : 350;
   const total = subtotal + shipping;
+  const cartCount = items.reduce(
+    (sum, item) => sum + Number(item.quantity || 0),
+    0,
+  );
 
-  const value = {
-    items,
-    cartCount,
-    subtotal,
-    shipping,
-    total,
-    freeShipThreshold,
-    addToCart,
-    removeFromCart,
-    setQty,
-    clearCart,
-  };
+  const value = useMemo(
+    () => ({
+      items,
+      subtotal,
+      shipping,
+      total,
+      cartCount,
+      freeShipThreshold: 5000,
+      addToCart,
+      setQty,
+      removeFromCart,
+      clearCart,
+      reloadCart: loadCart,
+      loading,
+    }),
+    [items, subtotal, shipping, total, cartCount, loading],
+  );
 
-  return <CartCtx.Provider value={value}>{children}</CartCtx.Provider>;
+  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }
 
 export function useCart() {
-  const ctx = useContext(CartCtx);
-  if (!ctx) {
-    throw new Error("useCart must be used inside CartProvider");
-  }
-  return ctx;
+  return useContext(CartContext);
 }

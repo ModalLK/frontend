@@ -11,20 +11,12 @@ export async function getProductById(id) {
 }
 
 export async function createProduct(payload) {
-  const res = await productHttp.post("", payload, {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+  const res = await productHttp.post("", payload);
   return res.data;
 }
 
 export async function updateProduct(id, payload) {
-  const res = await productHttp.put(`/${id}`, payload, {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+  const res = await productHttp.put(`/${id}`, payload);
   return res.data;
 }
 
@@ -37,6 +29,7 @@ export async function uploadProductImage(id, file) {
       "Content-Type": "multipart/form-data",
     },
   });
+
   return res.data;
 }
 
@@ -45,21 +38,7 @@ export async function deleteProduct(id) {
   return res.data;
 }
 
-
 export async function checkStock(productId, quantity) {
-  const res = await productHttp.post("/check-stock", {
-    productId,
-    quantity,
-  });
-
-  return res.data;
-}
-
-export async function reduceStock(productId, quantity) {
-  const res = await productHttp.post("/reduce-stock", {
-    productId,
-    quantity,
-  });
-
+  const res = await productHttp.post("/check-stock", { productId, quantity });
   return res.data;
 }
