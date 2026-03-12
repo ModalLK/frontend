@@ -5,6 +5,7 @@ import {
   createProduct,
   getProductById,
   updateProduct,
+  uploadProductImage,
 } from "../services/productService";
 
 const initialForm = {
@@ -49,29 +50,34 @@ export default function ProductForm() {
     try {
       setLoading(true);
 
-      const formData = new FormData();
-      formData.append("sku", form.sku);
-      formData.append("name", form.name);
-      formData.append("price", form.price);
-      formData.append("stock", form.stock);
-      formData.append("category", form.category);
-      formData.append("description", form.description);
+      const payload = {
+        sku: form.sku,
+        name: form.name,
+        price: Number(form.price),
+        stock: Number(form.stock),
+        category: form.category,
+        description: form.description,
+      };
 
-      if (imageFile) {
-        formData.append("file", imageFile);
-      }
+      let savedProduct;
 
       if (isEdit) {
-        await updateProduct(id, formData);
+        savedProduct = await updateProduct(id, payload);
+        if (imageFile) {
+          await uploadProductImage(id, imageFile);
+        }
         toast.success("Product updated successfully");
       } else {
-        await createProduct(formData);
+        savedProduct = await createProduct(payload);
+        if (imageFile && savedProduct?.id) {
+          await uploadProductImage(savedProduct.id, imageFile);
+        }
         toast.success("Product created successfully");
       }
 
       nav("/admin/products");
     } catch (error) {
-      toast.error(error.message || "Failed to save product");
+      toast.error(error?.response?.data?.message || "Failed to save product");
     } finally {
       setLoading(false);
     }

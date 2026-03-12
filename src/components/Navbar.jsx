@@ -1,6 +1,7 @@
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
+import { useAuth } from "../context/AuthContext";
 
 const navClass = ({ isActive }) =>
   `rounded-2xl px-4 py-2 text-sm font-semibold transition ${
@@ -10,8 +11,10 @@ const navClass = ({ isActive }) =>
   }`;
 
 export default function Navbar() {
+  const navigate = useNavigate();
   const { cartCount } = useCart();
   const { count: wishCount } = useWishlist();
+  const { isAuthenticated, isAdmin, logout } = useAuth();
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur-md">
@@ -35,12 +38,21 @@ export default function Navbar() {
           <NavLink to="/products" className={navClass}>
             Products
           </NavLink>
-          <NavLink to="/orders" className={navClass}>
-            Orders
-          </NavLink>
-          <NavLink to="/account" className={navClass}>
-            Account
-          </NavLink>
+          {isAuthenticated && (
+            <>
+              <NavLink to="/orders" className={navClass}>
+                Orders
+              </NavLink>
+              <NavLink to="/account" className={navClass}>
+                Account
+              </NavLink>
+            </>
+          )}
+          {isAdmin && (
+            <NavLink to="/admin/products" className={navClass}>
+              Admin
+            </NavLink>
+          )}
         </nav>
 
         <div className="flex items-center gap-2">
@@ -66,12 +78,24 @@ export default function Navbar() {
             </span>
           </Link>
 
-          <Link
-            to="/login"
-            className="hidden rounded-2xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 sm:inline-flex"
-          >
-            Login
-          </Link>
+          {!isAuthenticated ? (
+            <Link
+              to="/login"
+              className="hidden rounded-2xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 sm:inline-flex"
+            >
+              Login
+            </Link>
+          ) : (
+            <button
+              onClick={() => {
+                logout();
+                navigate("/login");
+              }}
+              className="hidden rounded-2xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 sm:inline-flex"
+            >
+              Logout
+            </button>
+          )}
         </div>
       </div>
     </header>

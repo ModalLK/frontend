@@ -1,15 +1,42 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import { formatCurrency } from "../utils/format";
 import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
+import { useAuth } from "../context/AuthContext";
+import { checkStock } from "../services/productService";
 
 export default function ProductCard({ product }) {
+  const navigate = useNavigate();
   const { addToCart } = useCart();
+  const { isAuthenticated } = useAuth();
   const { items: wish, toggleWishlist } = useWishlist();
 
   const stock = Number(product?.stock ?? 0);
   const outOfStock = stock <= 0;
   const wished = wish.some((x) => x.id === product?.id);
+
+  async function handleAddToCart() {
+    if (!isAuthenticated) {
+      toast.error("Please login first");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      const result = await checkStock(product.id, 1);
+
+      if (!result.available) {
+        toast.error("This product is out of stock");
+        return;
+      }
+
+      await addToCart(product, 1, "M");
+      toast.success("Added to cart");
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Failed to add to cart");
+    }
+  }
 
   return (
     <div className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl">
@@ -68,7 +95,7 @@ export default function ProductCard({ product }) {
 
         <button
           disabled={outOfStock}
-          onClick={() => addToCart(product, 1)}
+          onClick={handleAddToCart}
           className="w-full rounded-2xl bg-indigo-600 px-4 py-3 text-sm font-bold text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-slate-300"
         >
           Add to Cart
