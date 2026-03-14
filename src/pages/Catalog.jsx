@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { getAllProducts } from "../services/productService";
-import ProductCard from "../components/ProductCard";
-import CatalogSidebar from "../components/CatalogSidebar";
+import ProductCard from "../components/products/ProductCard";
+import CatalogSidebar from "../components/products/CatalogSidebar";
 
 export default function Catalog() {
   const [products, setProducts] = useState([]);
@@ -46,7 +46,6 @@ export default function Catalog() {
       const matchCategory = category === "ALL" || p.category === category;
       const price = Number(p.price || 0);
       const matchPrice = price >= minP && price <= maxP;
-
       const matchText =
         !text ||
         (p.name || "").toLowerCase().includes(text) ||
@@ -68,6 +67,7 @@ export default function Catalog() {
 
   return (
     <div className="grid gap-6 lg:grid-cols-4">
+      {/* Sidebar */}
       <div className="lg:col-span-1">
         <CatalogSidebar
           q={q}
@@ -82,28 +82,10 @@ export default function Catalog() {
         />
       </div>
 
+      {/* Product Grid */}
       <div className="lg:col-span-3">
-        <div className="mb-5 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-          <div className="flex flex-wrap items-end justify-between gap-3">
-            <div>
-              <h1 className="text-3xl font-black tracking-tight text-slate-900">
-                Catalog
-              </h1>
-              <p className="mt-1 text-sm text-slate-500">
-                Search, filter, compare, and shop products.
-              </p>
-            </div>
-
-            {!loading && !error && (
-              <p className="rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold text-slate-600">
-                {filtered.length} product{filtered.length !== 1 ? "s" : ""}
-              </p>
-            )}
-          </div>
-        </div>
-
         {loading && (
-          <div className="rounded-3xl border border-slate-200 bg-white p-6 text-sm text-slate-600 shadow-sm">
+          <div className="rounded-3xl border border-[#f3e8ff] bg-[#f3e8ff] p-6 text-sm font-semibold text-[#902bf5] shadow-sm">
             Loading products...
           </div>
         )}
@@ -115,7 +97,7 @@ export default function Catalog() {
         )}
 
         {!loading && !error && filtered.length === 0 && (
-          <div className="rounded-3xl border border-slate-200 bg-white p-6 text-sm text-slate-600 shadow-sm">
+          <div className="rounded-3xl border border-slate-200 bg-white p-6 text-sm text-slate-500 shadow-sm">
             No products found.
           </div>
         )}

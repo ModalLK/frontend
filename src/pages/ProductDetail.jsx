@@ -9,7 +9,7 @@ import {
 import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
 import { formatCurrency } from "../utils/format";
-import ProductCard from "../components/ProductCard";
+import ProductCard from "../components/products/ProductCard";
 
 export default function ProductDetail() {
   const { id } = useParams();
