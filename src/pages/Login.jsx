@@ -28,18 +28,18 @@ export default function Login() {
       const data = await login(form);
       toast.success("Login successful");
 
-      const intendedPath = location.state?.from?.pathname;
+      if (data?.role === "ROLE_ADMIN") {
+        nav("/admin/dashboard", { replace: true });
+        return;
+      }
 
+      const intendedPath = location.state?.from?.pathname;
       if (intendedPath) {
         nav(intendedPath, { replace: true });
         return;
       }
 
-      if (data?.role === "ROLE_ADMIN") {
-        nav("/admin/products", { replace: true });
-      } else {
-        nav("/", { replace: true });
-      }
+      nav("/", { replace: true });
     } catch (error) {
       toast.error(error?.response?.data?.message || "Login failed");
     } finally {
