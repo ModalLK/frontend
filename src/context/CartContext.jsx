@@ -36,14 +36,18 @@ export function CartProvider({ children }) {
     loadCart();
   }, [isAuthenticated]);
 
-  async function addToCart(product, quantity = 1, size = "M") {
-    const data = await addCartItem({
-      productId: product.id,
-      quantity,
-      size,
-    });
-    setCart(data);
-  }
+ 
+async function addToCart(product, quantity = 1, size = "M") {
+  const data = await addCartItem({
+    productId: product.id,
+    productName: product.name,
+    price: Number(product.price),
+    quantity,
+    size,
+  });
+  setCart(data);
+}
+
 
   async function setQty(itemId, quantity) {
     const data = await updateCartItem(itemId, { quantity });

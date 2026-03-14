@@ -23,13 +23,17 @@ import PaymentsPage from "./pages/PaymentsPage";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminUsers from "./pages/admin/AdminUser";
 import AdminOrders from "./pages/admin/AdminOrders";
-
+import AuthLayout from "./components/AuthLayout";
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* ── Admin routes (no Layout wrapper) ── */}
+        <Route element={<AuthLayout />}>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Route>
+
         <Route
           path="/admin/dashboard"
           element={
@@ -54,9 +58,7 @@ export default function App() {
             </AdminRoute>
           }
         />
-       
 
-        {/* ── User-facing routes (with Layout) ── */}
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<Catalog />} />

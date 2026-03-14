@@ -23,16 +23,16 @@ export default function Cart() {
 
   if (items.length === 0) {
     return (
-      <div className="rounded-[2rem] border border-slate-200 bg-white p-10 shadow-sm">
-        <h2 className="text-2xl font-black text-slate-900">
+      <div className=" bg-white p-10">
+        <h2 className="text-2xl font-semibold text-black">
           Your cart is empty
         </h2>
-        <p className="mt-2 text-sm text-slate-600">
+        <p className="mt-2 text-sm text-black">
           Add products to your cart and continue shopping.
         </p>
         <Link
           to="/products"
-          className="mt-6 inline-flex rounded-2xl bg-indigo-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-indigo-700"
+          className="mt-6 inline-flex rounded-xl bg-[#902bf5] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#7a1fe0]"
         >
           Browse Products
         </Link>
