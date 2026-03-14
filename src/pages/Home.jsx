@@ -90,7 +90,7 @@ export default function Home() {
 
   return (
     <div className="space-y-12">
-      <section className="rounded-[2rem] border border-slate-200 bg-white p-3 shadow-sm">
+      <section className="rounded-[2rem] p-3 shadow-sm">
         <Slider {...sliderSettings}>
           {slideData.map((slide) => (
             <div key={slide.id}>
