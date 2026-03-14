@@ -48,11 +48,7 @@ export default function Navbar() {
               </NavLink>
             </>
           )}
-          {isAdmin && (
-            <NavLink to="/admin/products" className={navClass}>
-              Admin
-            </NavLink>
-          )}
+         
         </nav>
 
         <div className="flex items-center gap-2">
