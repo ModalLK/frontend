@@ -13,16 +13,50 @@ import Orders from "./pages/Orders";
 import Wishlist from "./pages/Wishlist";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Account from "./pages/Account";
-import AdminProducts from "./pages/AdminProducts";
+import Account from "./pages/admin/Account";
+import AdminProducts from "./pages/admin/AdminProducts";
 import ProductForm from "./pages/ProductForm";
 import ProductView from "./pages/ProductView";
 import PaymentsPage from "./pages/PaymentsPage";
+
+// Admin pages
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminUsers from "./pages/admin/AdminUser";
+import AdminOrders from "./pages/admin/AdminOrders";
+
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* ── Admin routes (no Layout wrapper) ── */}
+        <Route
+          path="/admin/dashboard"
+          element={
+            <AdminRoute>
+              <AdminDashboard />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/users"
+          element={
+            <AdminRoute>
+              <AdminUsers />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/orders"
+          element={
+            <AdminRoute>
+              <AdminOrders />
+            </AdminRoute>
+          }
+        />
+       
+
+        {/* ── User-facing routes (with Layout) ── */}
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<Catalog />} />
@@ -36,7 +70,6 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-
           <Route
             path="/checkout"
             element={
@@ -45,7 +78,6 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-
           <Route
             path="/success"
             element={
@@ -54,7 +86,6 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-
           <Route
             path="/orders"
             element={
@@ -63,7 +94,6 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-
           <Route
             path="/account"
             element={

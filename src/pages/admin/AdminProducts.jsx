@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
-import { getAllProducts, deleteProduct } from "../services/productService";
-import { formatCurrency } from "../utils/format";
+import { getAllProducts, deleteProduct } from "../../services/productService";
+import { formatCurrency } from "../../utils/format";
+import AdminLayout from "../../components/admin/AdminLayout";
 
 export default function AdminProducts() {
   const [products, setProducts] = useState([]);
@@ -38,7 +39,8 @@ export default function AdminProducts() {
   }, []);
 
   return (
-    <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+    <AdminLayout>
+       <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-black text-slate-900">Admin Products</h1>
@@ -49,7 +51,7 @@ export default function AdminProducts() {
 
         <Link
           to="/admin/products/new"
-          className="rounded-2xl bg-indigo-600 px-4 py-3 text-sm font-bold text-white transition hover:bg-indigo-700"
+          className="rounded-2xl bg-[#902bf5] px-4 py-3 text-sm font-bold text-white transition hover:bg-indigo-700"
         >
           + Add Product
         </Link>
@@ -128,5 +130,7 @@ export default function AdminProducts() {
         </div>
       )}
     </div>
+    </AdminLayout>
+   
   );
 }
