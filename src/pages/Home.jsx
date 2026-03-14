@@ -2,31 +2,53 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Slider from "react-slick";
 import { getAllProducts } from "../services/productService";
-import ProductCard from "../components/ProductCard";
+import ProductCard from "../components/products/ProductCard";
 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "../styles/Home.css";
 
-import hero1 from "../assets/shopping1.jpg";
-import hero2 from "../assets/shopping2.jpg";
-import hero3 from "../assets/shopping3.jpg";
-import hero4 from "../assets/shopping4.jpg";
+import hero1 from "../../public/images/home/home1.jpg";
+import hero2 from "../../public/images/home/home5.jpg";
+import hero3 from "../../public/images/home/home7.jpg";
+import hero4 from "../../public/images/home/home8.jpg";
+
+const CATEGORY_LIMIT = 6;
+const PRODUCT_LIMIT = 10;
 
 export default function Home() {
+  const [allProducts, setAllProducts] = useState([]);
   const [featured, setFeatured] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [showAllCategories, setShowAllCategories] = useState(false);
+  const [activeCategory, setActiveCategory] = useState(null);
 
   useEffect(() => {
     (async () => {
       try {
         const data = await getAllProducts();
         const list = Array.isArray(data) ? data : [];
+        setAllProducts(list);
         setFeatured(list.slice(0, 4));
+
+        const unique = [
+          ...new Set(list.map((p) => p.category).filter(Boolean)),
+        ];
+        setCategories(unique);
+        if (unique.length > 0) setActiveCategory(unique[0]);
       } catch (err) {
-        console.error("Failed to load featured products", err);
+        console.error("Failed to load products", err);
       }
     })();
   }, []);
+
+  const visibleCategories = showAllCategories
+    ? categories
+    : categories.slice(0, CATEGORY_LIMIT);
+
+  const categoryProducts = allProducts.filter(
+    (p) => p.category === activeCategory,
+  );
 
   const sliderSettings = {
     dots: true,
@@ -79,54 +101,40 @@ export default function Home() {
     },
   ];
 
-  const categories = [
-    "Fashion",
-    "Makeup",
-    "Electronics",
-    "Home",
-    "Sports",
-    "Accessories",
-  ];
-
   return (
     <div className="space-y-12">
-      <section className="rounded-[2rem] border border-slate-200 bg-white p-3 shadow-sm">
+      {/* ── Hero Slider ── */}
+      <section>
         <Slider {...sliderSettings}>
           {slideData.map((slide) => (
             <div key={slide.id}>
-              <div className="relative h-[320px] overflow-hidden rounded-[28px] sm:h-[380px] lg:h-[520px]">
+              <div className="relative h-[320px] overflow-hidden rounded-2xl sm:h-[380px] lg:h-[520px]">
                 <img
                   src={slide.img}
                   alt={slide.title}
                   className="block h-full w-full object-cover"
                 />
-
                 <div className="absolute inset-0 bg-gradient-to-r from-black/35 via-black/10 to-transparent" />
-
                 <div className="absolute left-5 top-1/2 z-10 w-[85%] -translate-y-1/2 text-white sm:left-8 sm:w-[70%] lg:left-14 lg:w-[520px]">
-                  <p className="mb-3 inline-block rounded-full bg-white/20 px-3 py-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-100 backdrop-blur-sm sm:mb-4 sm:px-4 sm:text-xs">
+                  <p className="mb-3 inline-block rounded-full bg-[#7a1fe0] px-3 py-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-indigo-100 backdrop-blur-sm sm:mb-4 sm:px-4 sm:text-xs">
                     {slide.badge}
                   </p>
-
-                  <h1 className="text-3xl font-black leading-tight text-white sm:text-4xl lg:text-6xl lg:leading-[1.05]">
+                  <h1 className="text-3xl font-semibold leading-tight text-white sm:text-4xl lg:text-6xl">
                     {slide.title}
                   </h1>
-
-                  <p className="mt-3 text-sm font-medium text-slate-100 sm:mt-4 sm:text-base lg:text-2xl">
+                  <p className="mt-3 text-sm text-slate-100 sm:mt-4 sm:text-base lg:text-2xl">
                     {slide.subtitle}
                   </p>
-
                   <div className="mt-5 flex flex-wrap gap-3 sm:mt-6">
                     <Link
                       to={slide.buttonLink}
-                      className="inline-flex min-h-[44px] items-center justify-center rounded-2xl bg-indigo-600 px-5 text-sm font-bold text-white shadow-lg shadow-indigo-500/30 transition hover:-translate-y-0.5 hover:bg-indigo-700 sm:min-h-[48px] sm:px-7 sm:text-base"
+                      className="inline-flex min-h-[44px] items-center justify-center rounded-md bg-[#902bf5] px-5 text-sm font-bold text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-[#7a1fe0] sm:min-h-[48px] sm:px-7 sm:text-base"
                     >
                       {slide.buttonText}
                     </Link>
-
                     <Link
                       to="/products"
-                      className="inline-flex min-h-[44px] items-center justify-center rounded-2xl border border-white/70 bg-white/95 px-5 text-sm font-bold text-slate-900 transition hover:-translate-y-0.5 hover:bg-white sm:min-h-[48px] sm:px-7 sm:text-base"
+                      className="inline-flex min-h-[44px] items-center justify-center rounded-md border border-white/70 bg-white/95 px-5 text-sm font-bold text-slate-900 transition hover:-translate-y-0.5 hover:bg-white sm:min-h-[48px] sm:px-7 sm:text-base"
                     >
                       Browse All
                     </Link>
@@ -138,39 +146,97 @@ export default function Home() {
         </Slider>
       </section>
 
+      {/* Category Tabs */}
       <section>
-        <div className="flex items-end justify-between">
-          <div>
-            <h2 className="text-2xl font-black text-slate-900">
-              Shop by Category
-            </h2>
-            <p className="mt-1 text-sm text-slate-500">
-              Explore products by collection.
-            </p>
-          </div>
-
-          <Link
-            to="/products"
-            className="text-sm font-bold text-indigo-600 hover:text-indigo-700"
-          >
-            View all →
-          </Link>
+        <div className="flex items-center justify-between mb-5">
+          <h2 className="text-2xl font-semibold text-black">
+            Shop by Category
+          </h2>
+          {categories.length > CATEGORY_LIMIT && (
+            <button
+              onClick={() => setShowAllCategories((prev) => !prev)}
+              className="text-sm font-bold text-[#902bf5] hover:underline transition"
+            >
+              {showAllCategories ? "Show less" : "View all"}
+            </button>
+          )}
         </div>
 
-        <div className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
-          {categories.map((c) => (
-            <Link
+        {/* Category Pills */}
+        <div className="flex flex-wrap gap-3">
+          {visibleCategories.map((c) => (
+            <button
               key={c}
-              to={`/products?category=${encodeURIComponent(c)}`}
-              className="rounded-3xl border border-slate-200 bg-white p-5 text-center text-sm font-bold text-slate-800 shadow-sm transition hover:-translate-y-0.5 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700"
+              onClick={() => setActiveCategory(c)}
+              className={`rounded-full px-5 py-2 text-sm font-bold transition ${
+                activeCategory === c
+                  ? "bg-[#902bf5] text-white shadow-md"
+                  : "border border-[#902bf5] text-[#902bf5] hover:bg-[#f3e8ff]"
+              }`}
             >
               {c}
-            </Link>
+            </button>
           ))}
         </div>
+
+        {/* Category Products */}
+        {activeCategory && (
+          <div className="mt-6">
+            <h3 className="text-lg font-bold text-slate-800 mb-4">
+              {activeCategory}
+            </h3>
+
+            {categoryProducts.length === 0 ? (
+              <p className="text-sm text-slate-400">
+                No products in this category yet.
+              </p>
+            ) : (
+              <>
+                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                  {categoryProducts.slice(0, PRODUCT_LIMIT).map((p) => (
+                    <Link
+                      key={p.id}
+                      to={`/products/${p.id}`}
+                      className="group rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition"
+                    >
+                      <div className="aspect-square overflow-hidden">
+                        <img
+                          src={p.imageUrl || p.image}
+                          alt={p.name}
+                          className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                        />
+                      </div>
+                      <div className="p-3">
+                        <p className="text-sm font-semibold text-slate-800 truncate">
+                          {p.name}
+                        </p>
+                        <p className="mt-1 text-sm font-black text-[#902bf5]">
+                          LKR {Number(p.price).toLocaleString()}
+                        </p>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+
+                {/* View more — only if > 10 products */}
+                {categoryProducts.length > PRODUCT_LIMIT && (
+                  <div className="mt-6 flex justify-center">
+                    <Link
+                      to={`/products?category=${encodeURIComponent(activeCategory)}`}
+                      className="rounded-xl border border-[#902bf5] px-8 py-3 text-sm font-bold text-[#902bf5] transition hover:bg-[#902bf5] hover:text-white"
+                    >
+                      View more in {activeCategory} →
+                    </Link>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        )}
       </section>
 
-      <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+      {/* ── Featured Products ── */}
+      {/* <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex items-end justify-between">
           <div>
             <h2 className="text-2xl font-black text-slate-900">
@@ -180,10 +246,9 @@ export default function Home() {
               Hand-picked items from your store.
             </p>
           </div>
-
           <Link
             to="/products"
-            className="text-sm font-bold text-indigo-600 hover:text-indigo-700"
+            className="text-sm font-bold text-[#902bf5] hover:underline"
           >
             Explore more →
           </Link>
@@ -198,7 +263,7 @@ export default function Home() {
             </p>
           )}
         </div>
-      </section>
+      </section> */}
     </div>
   );
 }

@@ -1,10 +1,11 @@
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { formatCurrency } from "../utils/format";
-import { useCart } from "../context/CartContext";
-import { useWishlist } from "../context/WishlistContext";
-import { useAuth } from "../context/AuthContext";
-import { checkStock } from "../services/productService";
+import { Heart } from "lucide-react";
+import { formatCurrency } from "../../utils/format";
+import { useCart } from "../../context/CartContext";
+import { useWishlist } from "../../context/WishlistContext";
+import { useAuth } from "../../context/AuthContext";
+import { checkStock } from "../../services/productService";
 
 export default function ProductCard({ product }) {
   const navigate = useNavigate();
@@ -25,12 +26,10 @@ export default function ProductCard({ product }) {
 
     try {
       const result = await checkStock(product.id, 1);
-
       if (!result.available) {
         toast.error("This product is out of stock");
         return;
       }
-
       await addToCart(product, 1, "M");
       toast.success("Added to cart");
     } catch (error) {
@@ -41,7 +40,7 @@ export default function ProductCard({ product }) {
   return (
     <div className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl">
       <Link to={`/products/${product?.id}`} className="block">
-        <div className="relative h-52 w-full overflow-hidden bg-slate-100">
+        <div className="relative h-52 w-full overflow-hidden bg-gray-100">
           <img
             src={product?.imageUrl}
             alt={product?.name}
@@ -51,9 +50,24 @@ export default function ProductCard({ product }) {
                 "https://via.placeholder.com/800x600?text=No+Image")
             }
           />
-          <div className="absolute left-3 top-3 rounded-full bg-white/95 px-3 py-1 text-xs font-bold text-indigo-700 shadow-sm">
+          <div className="absolute left-3 top-3 rounded-full bg-[#902bf5] px-3 py-1 text-xs font-bold text-white shadow-sm">
             {product?.category ?? "General"}
           </div>
+
+          {/* Heart icon — top right of image */}
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              toggleWishlist(product);
+            }}
+            className="absolute right-3 top-3 rounded-full bg-white p-1.5 shadow-sm transition hover:scale-110"
+          >
+            <Heart
+              className={`h-4 w-4 transition ${
+                wished ? "fill-[f3e8ff] text-[#902bf5]" : "text-slate-400"
+              }`}
+            />
+          </button>
         </div>
       </Link>
 
@@ -70,7 +84,7 @@ export default function ProductCard({ product }) {
           </p>
         </div>
 
-        <div className="mb-4 flex items-center justify-between gap-3">
+        <div className="mb-4">
           <span
             className={
               outOfStock
@@ -80,23 +94,12 @@ export default function ProductCard({ product }) {
           >
             {outOfStock ? "Out of stock" : `In stock: ${stock}`}
           </span>
-
-          <button
-            onClick={() => toggleWishlist(product)}
-            className={`rounded-2xl border px-3 py-2 text-xs font-bold transition ${
-              wished
-                ? "border-slate-900 bg-slate-900 text-white"
-                : "border-slate-200 text-slate-700 hover:bg-slate-50"
-            }`}
-          >
-            {wished ? "Saved" : "Wishlist"}
-          </button>
         </div>
 
         <button
           disabled={outOfStock}
           onClick={handleAddToCart}
-          className="w-full rounded-2xl bg-indigo-600 px-4 py-3 text-sm font-bold text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-slate-300"
+          className="w-full rounded-2xl bg-[#902bf5] px-4 py-3 text-sm font-bold text-white transition hover:bg-[#7a1fe0] disabled:cursor-not-allowed disabled:bg-slate-300"
         >
           Add to Cart
         </button>

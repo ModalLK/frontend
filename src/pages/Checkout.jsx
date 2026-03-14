@@ -75,9 +75,9 @@ export default function CheckoutPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-10">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900">Checkout</h1>
-        <p className="mt-2 text-sm text-slate-500">
-          Complete your order and confirm payment.
+        <h1 className="text-3xl font-semibold text-black">Checkout</h1>
+        <p className="mt-2 text-sm text-black">
+          Complete your order and confirm payment
         </p>
       </div>
 
@@ -100,7 +100,7 @@ export default function CheckoutPage() {
                   name="fullName"
                   value={customer.fullName}
                   onChange={handleCustomerChange}
-                  className="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-slate-500"
+                  className="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none "
                   placeholder="Enter full name"
                   required
                 />
@@ -115,7 +115,7 @@ export default function CheckoutPage() {
                   name="phone"
                   value={customer.phone}
                   onChange={handleCustomerChange}
-                  className="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-slate-500"
+                  className="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none"
                   placeholder="Enter phone number"
                   required
                 />
@@ -130,7 +130,7 @@ export default function CheckoutPage() {
                   name="address"
                   value={customer.address}
                   onChange={handleCustomerChange}
-                  className="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-slate-500"
+                  className="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none"
                   placeholder="Enter address"
                   required
                 />
@@ -145,7 +145,7 @@ export default function CheckoutPage() {
                   name="city"
                   value={customer.city}
                   onChange={handleCustomerChange}
-                  className="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none focus:border-slate-500"
+                  className="w-full rounded-2xl border border-slate-300 px-4 py-3 outline-none"
                   placeholder="Enter city"
                   required
                 />
@@ -186,7 +186,7 @@ export default function CheckoutPage() {
           <button
             type="submit"
             disabled={loading || !items.length}
-            className="inline-flex w-full items-center justify-center rounded-2xl bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex w-full items-center justify-center rounded-2xl bg-[#902bf5]  px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#7a1fe0] disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading ? "Processing order..." : `Pay ${formatCurrency(total)}`}
           </button>
