@@ -104,17 +104,17 @@ export default function ProductDetail() {
         </div>
 
         <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-          <p className="inline-flex rounded-full bg-indigo-50 px-3 py-1 text-xs font-bold text-indigo-700">
+          <p className="inline-flex rounded-full bg-[#902bf5] px-3 py-1 text-xs font-bold text-white">
             {product.category ?? "General"}
           </p>
 
-          <h1 className="mt-4 text-3xl font-black tracking-tight text-slate-900">
+          <h1 className="mt-4 text-3xl font-semibold tracking-tight text-black">
             {product.name}
           </h1>
           <p className="mt-2 text-sm text-slate-500">SKU: {product.sku}</p>
 
           <div className="mt-5 flex items-center justify-between gap-4">
-            <p className="text-3xl font-black text-slate-900">
+            <p className="text-3xl text-slate-900">
               {formatCurrency(product.price)}
             </p>
             <span
@@ -128,16 +128,13 @@ export default function ProductDetail() {
             </span>
           </div>
 
-          <div className="mt-4 text-sm text-amber-500">
-            ★★★★☆ <span className="ml-1 text-slate-400">(120 reviews)</span>
-          </div>
 
           <div className="mt-6 flex items-center gap-3">
             <label className="text-sm font-bold text-slate-700">Quantity</label>
             <select
               value={qty}
               onChange={(e) => setQty(Number(e.target.value))}
-              className="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100"
+              className="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm outline-none "
               disabled={stock <= 0}
             >
               {Array.from({ length: maxQty }).map((_, i) => (
@@ -152,12 +149,12 @@ export default function ProductDetail() {
             <button
               disabled={stock <= 0}
               onClick={handleAddToCart}
-              className="flex-1 rounded-2xl bg-indigo-600 px-4 py-3 text-sm font-bold text-white transition hover:bg-indigo-700 disabled:bg-slate-300"
+              className="flex-1 rounded-2xl bg-[#902bf5] px-4 py-3 text-sm font-bold text-white transition hover:bg-[#7a1fe0]"
             >
               Add to Cart
             </button>
 
-            <button
+            {/* <button
               onClick={() => toggleWishlist(product)}
               className={`rounded-2xl border px-4 py-3 text-sm font-bold transition ${
                 wished
@@ -166,23 +163,23 @@ export default function ProductDetail() {
               }`}
             >
               {wished ? "Saved" : "Wishlist"}
-            </button>
+            </button> */}
           </div>
 
-          <div className="mt-6 rounded-3xl bg-slate-50 p-5 text-sm text-slate-600">
-            <p className="font-black text-slate-900">Description</p>
-            <p className="mt-2 leading-7">
+          <div className="mt-6 rounded-3xl p-5 text-sm text-slate-600">
+            <p className="font-semibold text-2xl text-slate-900">Description</p>
+            <p className="mt-2 ">
               {product.description ||
                 "No description available for this product yet."}
             </p>
           </div>
 
-          <Link
+          {/* <Link
             to="/products"
             className="mt-5 inline-flex text-sm font-bold text-indigo-600 hover:text-indigo-700"
           >
             ← Back to Catalog
-          </Link>
+          </Link> */}
         </div>
       </div>
 
