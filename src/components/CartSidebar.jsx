@@ -23,13 +23,13 @@ export default function CartSidebar({ open, onClose }) {
       {/* Backdrop */}
       {open && (
         <div
-          className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm"
+          className="fixed inset-0 z-[100] bg-black/30 backdrop-blur-sm"
           onClick={onClose}
         />
       )}
 
       {/* Sidebar panel */}
-      <div className={`fixed top-0 right-0 z-50 h-full w-full max-w-md bg-white shadow-2xl flex flex-col transition-transform duration-300 ease-in-out ${
+      <div className={`fixed top-0 right-0 z-[110] h-full w-full max-w-md bg-white shadow-2xl flex flex-col transition-transform duration-300 ease-in-out ${
         open ? "translate-x-0" : "translate-x-full"
       }`}>
 
