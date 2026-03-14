@@ -149,7 +149,7 @@ export default function Home() {
       {/* Category Tabs */}
       <section>
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-2xl font-black text-slate-900">
+          <h2 className="text-2xl font-semibold text-black">
             Shop by Category
           </h2>
           {categories.length > CATEGORY_LIMIT && (
