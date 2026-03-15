@@ -14,7 +14,7 @@ export default function AdminUsers() {
     try {
       const res = await axios.get(
         `${import.meta.env.VITE_USER_API_URL}/admin/users`,
-        { headers }
+        { headers },
       );
       setUsers(res.data);
     } catch (err) {
@@ -29,7 +29,7 @@ export default function AdminUsers() {
     try {
       await axios.delete(
         `${import.meta.env.VITE_USER_API_URL}/admin/users/${id}`,
-        { headers }
+        { headers },
       );
       toast.success("User deleted successfully");
       setUsers((prev) => prev.filter((u) => u.id !== id));
@@ -41,13 +41,13 @@ export default function AdminUsers() {
   const handleRoleChange = async (id, newRole) => {
     try {
       await axios.put(
-        `${import.meta.env.VITE_USER_API_URL}/admin/users/${id}/role?role=${newRole}`,
-        {},
-        { headers }
+        `${import.meta.env.VITE_USER_API_URL}/admin/users/${id}/role`,
+        { role: newRole },
+        { headers },
       );
       toast.success("Role updated successfully");
       setUsers((prev) =>
-        prev.map((u) => (u.id === id ? { ...u, role: newRole } : u))
+        prev.map((u) => (u.id === id ? { ...u, role: newRole } : u)),
       );
     } catch (err) {
       toast.error("Failed to update role");
@@ -87,21 +87,26 @@ export default function AdminUsers() {
               </thead>
               <tbody>
                 {users.map((u) => (
-                  <tr key={u.id} className="border-b border-slate-100 hover:bg-slate-50">
+                  <tr
+                    key={u.id}
+                    className="border-b border-slate-100 hover:bg-slate-50"
+                  >
                     <td className="px-4 py-3 text-slate-500">#{u.id}</td>
                     <td className="px-4 py-3 font-semibold text-slate-900">
                       {u.firstName} {u.lastName}
                     </td>
                     <td className="px-4 py-3 text-slate-600">{u.email}</td>
-                    <td className="px-4 py-3 text-slate-600">{u.phone || "-"}</td>
+                    <td className="px-4 py-3 text-slate-600">
+                      {u.phone || "-"}
+                    </td>
                     <td className="px-4 py-3">
                       <select
                         value={u.role}
                         onChange={(e) => handleRoleChange(u.id, e.target.value)}
-                        className="rounded-xl border border-slate-200 px-3 py-1 text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                        className="rounded-xl border border-slate-200 px-3 py-1 text-sm font-semibold text-slate-700 focus:outline-none "
                       >
-                        <option value="ROLE_USER">USER</option>
-                        <option value="ROLE_ADMIN">ADMIN</option>
+                        <option value="USER">USER</option>
+                        <option value="ADMIN">ADMIN</option>
                       </select>
                     </td>
                     <td className="px-4 py-3">
