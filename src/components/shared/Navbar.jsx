@@ -87,7 +87,7 @@ export default function Navbar() {
               {!isAuthenticated ? (
                 <Link
                   to="/login"
-                  className="rounded-xl bg-[#902bf5] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#7a1fe0]"
+                  className="rounded-md bg-[#902bf5] px-6 py-2 text-sm font-bold text-white transition hover:bg-[#7a1fe0]"
                 >
                   Sign In
                 </Link>
