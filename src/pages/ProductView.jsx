@@ -54,7 +54,7 @@ export default function ProductView() {
         </div>
 
         <div>
-          <p className="inline-flex rounded-full bg-indigo-50 px-3 py-1 text-xs font-bold text-indigo-700">
+          <p className="inline-flex rounded-full bg-[#902bf5] px-3 py-1 text-xs font-bold text-white">
             {product.category || "General"}
           </p>
 
@@ -72,7 +72,7 @@ export default function ProductView() {
             Stock: <span className="font-bold">{product.stock}</span>
           </p>
 
-          <div className="mt-6 rounded-3xl bg-slate-50 p-5 text-sm text-slate-600">
+          <div className="mt-6 p-5 text-sm text-slate-600">
             <p className="font-black text-slate-900">Description</p>
             <p className="mt-2 leading-7">
               {product.description || "No description available."}
@@ -82,14 +82,14 @@ export default function ProductView() {
           <div className="mt-6 flex gap-3">
             <Link
               to={`/admin/products/edit/${product.id}`}
-              className="rounded-2xl bg-indigo-600 px-5 py-3 text-sm font-bold text-white hover:bg-indigo-700"
+              className="rounded-xl bg-[#902bf5] px-6 py-3 text-sm font-bold text-white hover:bg-[#7a1fe0]"
             >
               Edit
             </Link>
 
             <Link
               to="/admin/products"
-              className="rounded-2xl border border-slate-200 px-5 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50"
+              className="rounded-xl border border-slate-200 px-6 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50"
             >
               Back
             </Link>
