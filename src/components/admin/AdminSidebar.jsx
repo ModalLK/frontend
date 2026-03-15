@@ -29,7 +29,7 @@ export default function AdminSidebar() {
   };
 
   return (
-    <div className="h-screen w-64 bg-white text-[#1a1a2e] flex flex-col fixed left-0 top-0 z-50">
+    <div className="h-screen w-64 bg-gray-100 text-[#1a1a2e] flex flex-col fixed left-0 top-0 z-50">
       {/* Logo */}
       <div className="p-6 flex flex-col items-center gap-3">
         <img
@@ -62,9 +62,9 @@ export default function AdminSidebar() {
       <div className="p-4">
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-[#1a1a2e] w-full transition-all"
+          className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-[#1a1a2e] hover:underline w-full transition-all"
         >
-          <LogOut size={18} />
+          
           Logout
         </button>
       </div>
