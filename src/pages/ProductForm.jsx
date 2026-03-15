@@ -141,7 +141,7 @@ export default function ProductForm() {
               name="sku"
               value={form.sku}
               onChange={handleChange}
-              className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100"
+              className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none "
               required
               disabled={isEdit}
             />
@@ -155,7 +155,7 @@ export default function ProductForm() {
               name="name"
               value={form.name}
               onChange={handleChange}
-              className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100"
+              className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none"
               required
             />
           </div>
@@ -171,7 +171,7 @@ export default function ProductForm() {
               name="price"
               value={form.price}
               onChange={handleChange}
-              className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100"
+              className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none "
               required
               min="0"
               step="0.01"
@@ -187,7 +187,7 @@ export default function ProductForm() {
               name="stock"
               value={form.stock}
               onChange={handleChange}
-              className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100"
+              className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none "
               required
               min="0"
             />
@@ -224,7 +224,7 @@ export default function ProductForm() {
             name="category"
             value={form.category}
             onChange={handleChange}
-            className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100"
+            className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none"
             required
           />
         </div>
@@ -238,7 +238,7 @@ export default function ProductForm() {
             value={form.description}
             onChange={handleChange}
             rows={5}
-            className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100"
+            className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none"
           />
         </div>
 
@@ -254,7 +254,7 @@ export default function ProductForm() {
           <button
             type="submit"
             disabled={loading}
-            className="flex-1 rounded-2xl bg-indigo-600 px-4 py-3 text-sm font-bold text-white hover:bg-indigo-700 disabled:bg-slate-300"
+            className="flex-1 rounded-2xl bg-[#902bf5] px-4 py-3 text-sm font-bold text-white hover:bg-[#7a1fe0] disabled:bg-slate-300"
           >
             {loading
               ? "Saving..."

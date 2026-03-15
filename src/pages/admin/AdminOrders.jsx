@@ -3,7 +3,13 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import AdminLayout from "../../components/admin/AdminLayout";
 
-const STATUS_OPTIONS = ["PENDING", "CONFIRMED", "SHIPPED", "DELIVERED", "CANCELLED"];
+const STATUS_OPTIONS = [
+  "PENDING",
+  "CONFIRMED",
+  "SHIPPED",
+  "DELIVERED",
+  "CANCELLED",
+];
 
 const STATUS_COLORS = {
   PENDING: "bg-yellow-100 text-yellow-700",
@@ -24,7 +30,7 @@ export default function AdminOrders() {
     try {
       const res = await axios.get(
         `${import.meta.env.VITE_ORDER_API_URL}/admin/orders`,
-        { headers }
+        { headers },
       );
       setOrders(res.data);
     } catch (err) {
@@ -39,11 +45,11 @@ export default function AdminOrders() {
       await axios.put(
         `${import.meta.env.VITE_ORDER_API_URL}/admin/orders/${orderId}/status?status=${newStatus}`,
         {},
-        { headers }
+        { headers },
       );
       toast.success("Order status updated");
       setOrders((prev) =>
-        prev.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o))
+        prev.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o)),
       );
     } catch (err) {
       toast.error("Failed to update order status");
@@ -83,7 +89,10 @@ export default function AdminOrders() {
               </thead>
               <tbody>
                 {orders.map((o) => (
-                  <tr key={o.id} className="border-b border-slate-100 hover:bg-slate-50">
+                  <tr
+                    key={o.id}
+                    className="border-b border-slate-100 hover:bg-slate-50"
+                  >
                     <td className="px-4 py-3 text-slate-500">#{o.id}</td>
                     <td className="px-4 py-3 text-slate-600 max-w-[150px] truncate">
                       {o.userEmail}
@@ -92,15 +101,22 @@ export default function AdminOrders() {
                       {o.orderItems?.length || 0} items
                     </td>
                     <td className="px-4 py-3 font-semibold text-slate-900">
-                      ${o.totalAmount?.toFixed(2)}
+                      {new Intl.NumberFormat("si-LK", {
+                        style: "currency",
+                        currency: "LKR",
+                        minimumFractionDigits: 2,
+                      }).format(o.totalAmount || 0)}
                     </td>
+
                     <td className="px-4 py-3 text-slate-600 max-w-[150px] truncate">
                       {o.shippingAddress}
                     </td>
                     <td className="px-4 py-3">
                       <select
                         value={o.status}
-                        onChange={(e) => handleStatusChange(o.id, e.target.value)}
+                        onChange={(e) =>
+                          handleStatusChange(o.id, e.target.value)
+                        }
                         className={`rounded-xl px-3 py-1 text-sm font-bold border-0 focus:outline-none focus:ring-2 focus:ring-indigo-300 ${STATUS_COLORS[o.status]}`}
                       >
                         {STATUS_OPTIONS.map((s) => (
