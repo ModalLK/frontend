@@ -35,7 +35,7 @@ export default function AdminSidebar() {
         <img
           src="/images/logo.png"
           alt="ModelLK"
-          className="h-16 w-auto object-contain"
+          className="h-16 w-auto object-contain rounded-full"
         />
         <h1 className="text-2xl font-bold">Welcome</h1>
       </div>
