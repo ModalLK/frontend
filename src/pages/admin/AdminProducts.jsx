@@ -51,9 +51,9 @@ export default function AdminProducts() {
 
         <Link
           to="/admin/products/new"
-          className="rounded-2xl bg-[#902bf5] px-4 py-3 text-sm font-bold text-white transition hover:bg-indigo-700"
+          className="rounded-xl bg-[#902bf5] px-6 py-3 text-sm font-bold text-white transition hover:bg-[#7a1fe0]"
         >
-          + Add Product
+          Add Product
         </Link>
       </div>
 
