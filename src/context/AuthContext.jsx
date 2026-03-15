@@ -59,6 +59,7 @@ export function AuthProvider({ children }) {
       login,
       register,
       logout,
+      refreshProfile,         
       isAuthenticated: !!user,
       isAdmin: user?.role === "ROLE_ADMIN",
     }),
