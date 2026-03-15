@@ -18,6 +18,7 @@ import AdminProducts from "./pages/admin/AdminProducts";
 import ProductForm from "./pages/ProductForm";
 import ProductView from "./pages/ProductView";
 import PaymentsPage from "./pages/PaymentsPage";
+import ProfilePage from "./pages/ProfilePage";
 
 // Admin pages
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -55,6 +56,14 @@ export default function App() {
           element={
             <AdminRoute>
               <AdminOrders />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/products"
+          element={
+            <AdminRoute>
+              <AdminProducts />
             </AdminRoute>
           }
         />
@@ -119,14 +128,6 @@ export default function App() {
           />
 
           <Route
-            path="/admin/products"
-            element={
-              <AdminRoute>
-                <AdminProducts />
-              </AdminRoute>
-            }
-          />
-          <Route
             path="/admin/products/new"
             element={
               <AdminRoute>
@@ -150,6 +151,8 @@ export default function App() {
               </AdminRoute>
             }
           />
+
+          <Route path="/profile" element={<ProfilePage />} />
         </Route>
       </Routes>
     </BrowserRouter>
