@@ -25,6 +25,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminUsers from "./pages/admin/AdminUser";
 import AdminOrders from "./pages/admin/AdminOrders";
 import AuthLayout from "./components/AuthLayout";
+import AdminLogin from "./pages/AdminLogin";
 
 export default function App() {
   return (
@@ -33,6 +34,7 @@ export default function App() {
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
         </Route>
 
         <Route

@@ -17,11 +17,11 @@ export const paymentHttp = axios.create({
 });
 
 const attachToken = (config) => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
+    const token = localStorage.getItem("token");
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
 };
 
 [userHttp, productHttp, orderHttp, paymentHttp].forEach((client) => {
