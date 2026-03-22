@@ -5,7 +5,6 @@ import { formatCurrency } from "../../utils/format";
 import { useCart } from "../../context/CartContext";
 import { useWishlist } from "../../context/WishlistContext";
 import { useAuth } from "../../context/AuthContext";
-import { checkStock } from "../../services/productService";
 
 export default function ProductCard({ product }) {
   const navigate = useNavigate();
@@ -25,11 +24,6 @@ export default function ProductCard({ product }) {
     }
 
     try {
-      const result = await checkStock(product.id, 1);
-      if (!result.available) {
-        toast.error("This product is out of stock");
-        return;
-      }
       await addToCart(product, 1, "M");
       toast.success("Added to cart");
     } catch (error) {
@@ -54,7 +48,6 @@ export default function ProductCard({ product }) {
             {product?.category ?? "General"}
           </div>
 
-          {/* Heart icon — top right of image */}
           <button
             onClick={(e) => {
               e.preventDefault();

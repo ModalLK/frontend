@@ -1,13 +1,12 @@
 import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 import { useFormErrors } from "../hooks/useFormErrors";
 import FieldError from "../components/FieldError";
 
-export default function Login() {
+export default function AdminLogin() {
   const nav = useNavigate();
-  const location = useLocation();
   const { login } = useAuth();
   const { fieldErrors, applyErrors, clearError, resetErrors } = useFormErrors();
 
@@ -28,14 +27,16 @@ export default function Login() {
       setLoading(true);
       const data = await login(form);
 
-      if (data?.role === "ROLE_ADMIN") {
-        nav("/admin/dashboard", { replace: true });
+      if (data?.role !== "ROLE_ADMIN") {
+        toast.error("Access denied. Admin accounts only.");
+        localStorage.removeItem("token");
+        localStorage.removeItem("userEmail");
+        localStorage.removeItem("userRole");
         return;
       }
 
-      toast.success("Login successful");
-      const intendedPath = location.state?.from?.pathname;
-      nav(intendedPath || "/", { replace: true });
+      toast.success("Welcome back, Admin!");
+      nav("/admin/dashboard", { replace: true });
     } catch (error) {
       applyErrors(error);
       const msg = error?.response?.data?.message;
@@ -53,14 +54,21 @@ export default function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-xl rounded-2xl bg-white p-8 shadow-lg">
-        <h1 className="text-3xl font-semibold text-black text-center">Welcome Back</h1>
-        <p className="mt-2 text-xs text-black text-center">
-          Sign in to continue shopping and manage your orders
+
+        {/* Admin badge */}
+        <div className="flex justify-center mb-4">
+          <span className="inline-block rounded-full bg-[#902bf5]/10 px-4 py-1 text-xs font-bold text-[#902bf5] uppercase tracking-widest">
+            Admin Portal
+          </span>
+        </div>
+
+        <h1 className="text-3xl font-semibold text-black text-center">Admin Sign In</h1>
+        <p className="mt-2 text-xs text-slate-500 text-center">
+          This portal is restricted to authorized administrators only.
         </p>
 
         <form onSubmit={onSubmit} className="mt-6 space-y-4">
 
-          {/* Email */}
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium text-black">Email</label>
             <input
@@ -69,12 +77,11 @@ export default function Login() {
               value={form.email}
               onChange={handleChange}
               className={inputClass("email")}
-              placeholder="Enter your email"
+              placeholder="Enter admin email"
             />
             <FieldError message={fieldErrors.email} />
           </div>
 
-          {/* Password */}
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium text-black">Password</label>
             <div className="relative">
@@ -84,7 +91,7 @@ export default function Login() {
                 value={form.password}
                 onChange={handleChange}
                 className={`${inputClass("password")} pr-12`}
-                placeholder="Enter your password"
+                placeholder="Enter admin password"
               />
               <button
                 type="button"
@@ -112,18 +119,16 @@ export default function Login() {
               bg-[#902bf5] hover:bg-[#7a1fe0]
               disabled:bg-gray-300 disabled:text-gray-500"
           >
-            {loading ? "Signing in..." : "Sign in"}
+            {loading ? "Signing in..." : "Sign in to Admin"}
           </button>
         </form>
 
-        {/* Customer register link only - no admin link */}
-        <p className="mt-4 text-sm text-black text-center">
-          Don't have an account?{" "}
-          <Link to="/register" className="font-bold text-[#902bf5] hover:underline">
-            Register
-          </Link>
+        <p className="mt-6 text-xs text-slate-400 text-center">
+          Not an admin?{" "}
+          <a href="/login" className="font-bold text-[#902bf5] hover:underline">
+            Go to customer login
+          </a>
         </p>
-
       </div>
     </div>
   );

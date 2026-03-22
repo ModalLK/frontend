@@ -21,15 +21,15 @@ export async function updateMyProfile(payload) {
 }
 
 export async function uploadProfileImage(file) {
-  const form = new FormData();
-  form.append("image", file);
-  const res = await userHttp.put("/users/profile/image", form, {
+  const formData = new FormData();
+  formData.append("image", file);          
+  const res = await userHttp.put("/users/profile/image", formData, { 
     headers: { "Content-Type": "multipart/form-data" },
   });
   return res.data;
 }
 
 export async function changePassword(payload) {
-  const res = await userHttp.put("/users/change-password", payload);
+  const res = await userHttp.put("users/change-password", payload);
   return res.data;
 }
