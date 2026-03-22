@@ -1,11 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import toast from "react-hot-toast";
-import {
-  getAllProducts,
-  getProductById,
-  checkStock,
-} from "../services/productService";
+import { getAllProducts, getProductById } from "../services/productService"; // ← remove checkStock
 import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
 import { formatCurrency } from "../utils/format";
@@ -54,17 +50,11 @@ export default function ProductDetail() {
 
   async function handleAddToCart() {
     try {
-      const result = await checkStock(product.id, qty);
-
-      if (!result.available) {
-        toast.error(`Only ${result.availableStock} item(s) available`);
-        return;
-      }
-
-      addToCart(product, qty);
+      // ← removed checkStock call — order-service handles stock check internally
+      await addToCart(product, qty, "M");
       toast.success("Added to cart");
     } catch (error) {
-      toast.error(error?.response?.data?.message || "Failed to check stock");
+      toast.error(error?.response?.data?.message || "Failed to add to cart");
     }
   }
 
@@ -128,13 +118,12 @@ export default function ProductDetail() {
             </span>
           </div>
 
-
           <div className="mt-6 flex items-center gap-3">
             <label className="text-sm font-bold text-slate-700">Quantity</label>
             <select
               value={qty}
               onChange={(e) => setQty(Number(e.target.value))}
-              className="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm outline-none "
+              className="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm outline-none"
               disabled={stock <= 0}
             >
               {Array.from({ length: maxQty }).map((_, i) => (
@@ -153,33 +142,15 @@ export default function ProductDetail() {
             >
               Add to Cart
             </button>
-
-            {/* <button
-              onClick={() => toggleWishlist(product)}
-              className={`rounded-2xl border px-4 py-3 text-sm font-bold transition ${
-                wished
-                  ? "border-slate-900 bg-slate-900 text-white"
-                  : "border-slate-200 text-slate-700 hover:bg-slate-50"
-              }`}
-            >
-              {wished ? "Saved" : "Wishlist"}
-            </button> */}
           </div>
 
           <div className="mt-6 rounded-3xl p-5 text-sm text-slate-600">
             <p className="font-semibold text-2xl text-slate-900">Description</p>
-            <p className="mt-2 ">
+            <p className="mt-2">
               {product.description ||
                 "No description available for this product yet."}
             </p>
           </div>
-
-          {/* <Link
-            to="/products"
-            className="mt-5 inline-flex text-sm font-bold text-indigo-600 hover:text-indigo-700"
-          >
-            ← Back to Catalog
-          </Link> */}
         </div>
       </div>
 
