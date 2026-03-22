@@ -1,35 +1,35 @@
 import { userHttp } from "../api/http";
 
 export async function registerUser(payload) {
-  const res = await userHttp.post("/auth/register", payload);
+  const res = await userHttp.post("api/auth/register", payload);
   return res.data;
 }
 
 export async function loginUser(payload) {
-  const res = await userHttp.post("/auth/login", payload);
+  const res = await userHttp.post("api/auth/login", payload);
   return res.data;
 }
 
 export async function getMyProfile() {
-  const res = await userHttp.get("/users/profile");
+  const res = await userHttp.get("api/users/profile");
   return res.data;
 }
 
 export async function updateMyProfile(payload) {
-  const res = await userHttp.put("/users/profile", payload);
+  const res = await userHttp.put("api/users/profile", payload);
   return res.data;
 }
 
 export async function uploadProfileImage(file) {
-  const formData = new FormData();
-  formData.append("image", file);          
-  const res = await userHttp.put("/users/profile/image", formData, { 
+  const form = new FormData();
+  form.append("image", file);
+  const res = await userHttp.put("api/users/profile/image", form, {
     headers: { "Content-Type": "multipart/form-data" },
   });
   return res.data;
 }
 
 export async function changePassword(payload) {
-  const res = await userHttp.put("users/change-password", payload);
+  const res = await userHttp.put("api/users/change-password", payload);
   return res.data;
 }
