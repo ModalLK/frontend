@@ -37,7 +37,7 @@ export default function AdminDashboard() {
       try {
         const [ordersRes, usersRes, paymentsRes] = await Promise.all([
           axios.get(`${import.meta.env.VITE_ORDER_API_URL}/admin/orders`, { headers }),
-          axios.get(`${import.meta.env.VITE_USER_API_URL}/admin/users`, { headers }),
+          axios.get(`${import.meta.env.VITE_USER_API_URL}/api/admin/users`, { headers }),
           axios.get(`${import.meta.env.VITE_PAYMENT_API_URL}/admin/payments`, { headers }),
         ]);
         setOrders(ordersRes.data);

@@ -13,7 +13,7 @@ export default function AdminUsers() {
   const fetchUsers = async () => {
     try {
       const res = await axios.get(
-        `${import.meta.env.VITE_USER_API_URL}/admin/users`,
+        `${import.meta.env.VITE_USER_API_URL}/api/admin/users`,
         { headers },
       );
       setUsers(res.data);
@@ -28,7 +28,7 @@ export default function AdminUsers() {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
     try {
       await axios.delete(
-        `${import.meta.env.VITE_USER_API_URL}/admin/users/${id}`,
+        `${import.meta.env.VITE_USER_API_URL}/api/admin/users/${id}`,
         { headers },
       );
       toast.success("User deleted successfully");
@@ -41,7 +41,7 @@ export default function AdminUsers() {
   const handleRoleChange = async (id, newRole) => {
     try {
       await axios.put(
-        `${import.meta.env.VITE_USER_API_URL}/admin/users/${id}/role`,
+        `${import.meta.env.VITE_USER_API_URL}/api/admin/users/${id}/role`,
         { role: newRole },
         { headers },
       );
